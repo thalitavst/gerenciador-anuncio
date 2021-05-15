@@ -18,4 +18,4 @@ node calculadoraStart.js
 Projeto realizado para estágio na Academia Capgemini.
 
 # AUTORA
-Thalita Teixera
+Thalita Teixeira
