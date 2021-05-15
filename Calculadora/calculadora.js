@@ -1,12 +1,6 @@
-const readline = require("readline");
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
 // 30 pessoas visualizam o anúncio original (não compartilhado) a cada R$ 1,00 investido.
 function obterNumeroTotalVisualizacaoPorValorInvestido(valorInvestido) {
-  return (numeroTotalVisualizacaoPorValorInvestido = valorInvestido * 30);
+  return valorInvestido * 30;
 }
 
 // a cada 100 pessoas que visualizam o anúncio 12 clicam nele.
@@ -26,7 +20,7 @@ function obterNumeroVisualizacoesPorCompartilhamento(total) {
 
 // Imprime o resultado no console
 function imprimirResultado(resultado) {
-  console.log(`O número estimado é de ${resultado} visualizações`);
+  console.log(`O número estimado são de ${resultado} visualizações`);
 }
 
 // o mesmo anúncio é compartilhado no máximo 4 vezes em sequência
@@ -34,32 +28,11 @@ function obterTotalPorCompartilhamento(totalAnuncio) {
   return totalAnuncio * 4;
 }
 
-function start() {
-  rl.question("Qual o valor investido ? ", function (valor) {
-    if (valor < 1) {
-      console.log(`${valor} abaixo do permitido.`);
-      rl.close();
-    }
-    let numeroTotalVisualizacaoPorValorInvestido = obterNumeroTotalVisualizacaoPorValorInvestido(
-      valor
-    );
-    let numeroClique = obterNumeroCliques(
-      numeroTotalVisualizacaoPorValorInvestido
-    );
-    let numeroCompartilhamento = obterNumeroCompartilhamento(numeroClique);
-    let numeroVisualizacaoPorCompartilhamento = obterNumeroVisualizacoesPorCompartilhamento(
-      numeroCompartilhamento
-    );
-
-    imprimirResultado(Math.round(numeroVisualizacaoPorCompartilhamento));
-
-    rl.close();
-  });
-}
-
-rl.on("close", function () {
-  console.log("\nBYE BYE !!!");
-  process.exit(0);
-});
-
-start();
+module.exports = {
+  obterNumeroTotalVisualizacaoPorValorInvestido,
+  obterNumeroCliques,
+  obterNumeroCompartilhamento,
+  obterNumeroVisualizacoesPorCompartilhamento,
+  obterTotalPorCompartilhamento,
+  imprimirResultado,
+};

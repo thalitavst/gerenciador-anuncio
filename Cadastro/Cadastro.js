@@ -1,8 +1,17 @@
 "use strict";
 
+const calculadora = require("../Calculadora/calculadora");
+const inquirer = require("inquirer");
+
 function convertStringToDate(dateAsString) {
   const date = dateAsString.split("/");
   return new Date(date[2], date[1], date[0]);
+}
+
+function getNumberOfDaysBetweenTwoDates(dataInicial, dataFinal) {
+  const differenceInTime = dataFinal.getTime() - dataInicial.getTime();
+  const differenceInDays = differenceInTime / (1000 * 3600 * 24);
+  return differenceInDays;
 }
 
 class Cliente {
@@ -41,31 +50,6 @@ const clienteRepositorio = new (class {
     return this.clientes;
   }
 })();
-
-// Perguntas:
-/* Principal
-1) - Cadastrar Cliente
-2) - Exibir Relatório
-
-Opção 1) Cadastrar Cliente
-* solicita os dados do cliente
-Dados:
-// nome do anúncio
-// cliente (ou nome do cliente)
-// data de início
-// data de término
-// investimento por dia
--terminou de solicitar retorna para Principal.
-
-Opção 2) Exibir Relatório
-Perguntas:
-pergunta número 1: Informe o tempo do cliente em dias:
-pergunta núemro 2: Informe o nome do cliente:
-
-Opção 3) Terminar
-*/
-
-const inquirer = require("inquirer");
 
 console.log("Olá, bem vindo ao gerenciado de anúncios!");
 
@@ -138,19 +122,76 @@ function start() {
         break;
       case "Exibir Relatório":
         inquirer.prompt(questionsExibirRelatorio).then((dadosRelatorio) => {
-          console.log("################################\n");
-          console.log("#  Exibindo Clientes Salvos    #\n");
-          console.log("################################\n");
-          console.log(JSON.stringify(clienteRepositorio.listar()));
+          console.log("##############################################\n");
+          console.log(
+            "  Exibindo Relatório para o cliente: " +
+              dadosRelatorio.nomeCliente +
+              "\n"
+          );
+          console.log("##############################################\n");
 
           // Os relatórios poderão ser filtrados por intervalo de tempo e cliente.
           const dataInicio = convertStringToDate(dadosRelatorio.dataInicio);
           const dataFinal = convertStringToDate(dadosRelatorio.dataFinal);
+          const numeroEmDias = getNumberOfDaysBetweenTwoDates(
+            dataInicio,
+            dataFinal
+          );
+          const clienteSelecionado = clienteRepositorio
+            .listar()
+            .filter(
+              (cliente) =>
+                cliente.nomeCliente.toLowerCase() ===
+                dadosRelatorio.nomeCliente.toLowerCase()
+            )[0];
+
+          console.log(`cliente selecionado: ${clienteSelecionado.nomeCliente}`);
+
+          const investimentoPorDia = parseFloat(
+            clienteSelecionado.investimentoPorDia
+          );
 
           // valor total investido
-          // quantidade máxima de visualizações
+          const valorTotalInvestido =
+            investimentoPorDia * parseInt(numeroEmDias);
+
+          const numeroTotalVisualizacaoPorValorInvestido =
+            calculadora.obterNumeroTotalVisualizacaoPorValorInvestido(
+              valorTotalInvestido
+            );
+          console.log(
+            `Valor total investido: ${Math.round(valorTotalInvestido)}`
+          );
+
           // quantidade máxima de cliques
+          const numeroClique = Math.round(
+            calculadora.obterNumeroCliques(
+              numeroTotalVisualizacaoPorValorInvestido
+            )
+          );
+          console.log(
+            `Quantidade máxima de cliques: ${Math.round(numeroClique)}`
+          );
+
           // quantidade máxima de compartilhamentos
+          const numeroCompartilhamento =
+            calculadora.obterNumeroCompartilhamento(numeroClique);
+          console.log(
+            `Quantidade máxima de compartilhamentos: ${Math.round(
+              numeroCompartilhamento
+            )}`
+          );
+
+          // quantidade máxima de visualizações
+          const quantidadeMaximaVisualizacoes =
+            calculadora.obterNumeroVisualizacoesPorCompartilhamento(
+              numeroCompartilhamento
+            );
+          console.log(
+            `Quantidade máxima de visualizações: ${Math.round(
+              quantidadeMaximaVisualizacoes
+            )}`
+          );
 
           start();
         });
@@ -162,15 +203,3 @@ function start() {
 }
 
 start();
-
-// valor total investido
-function valorTotalInvestido() {}
-
-// quantidade máxima de visualizações
-function qtdMaximaVisualizacoes() {}
-
-// quantidade máxima de cliques
-function qtdMaximaCliques() {}
-
-// quantidade máxima de compartilhamentos
-function qtdMaximaCompartilhamentos() {}
